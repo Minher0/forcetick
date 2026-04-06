@@ -9,11 +9,10 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.GameRules;
-import net.minecraft.world.level.storage.LevelResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.nio.file.Path;
+import java.io.File;
 
 /**
  * ForceTick Server Mod
@@ -31,7 +30,7 @@ public class ForceTickMod implements ModInitializer {
     public static int serverTick = 0;
     public static int randomTickSpeed = 3;
     public static String CHUNK_DATA_FILE = MOD_ID + "-chunks.txt";
-    public static Path CHUNK_DATA_FILE_PATH = Path.of(CHUNK_DATA_FILE);
+    public static File CHUNK_DATA_FILE_PATH = new File(CHUNK_DATA_FILE);
 
     @Override
     public void onInitialize() {
@@ -39,16 +38,17 @@ public class ForceTickMod implements ModInitializer {
         LOGGER.info("Based on FXNT Chunks concept by foxynotail");
 
         // World load event - set paths and load data (like FXNT)
-        ServerWorldEvents.LOAD.register((server, level) -> {
+        ServerWorldEvents.LOAD.register((server, world) -> {
             // Set file path to world folder
-            CHUNK_DATA_FILE_PATH = server.getWorldPath(LevelResource.ROOT).resolve(CHUNK_DATA_FILE);
+            File runDir = server.getRunDirectory();
+            CHUNK_DATA_FILE_PATH = new File(runDir, "world/" + CHUNK_DATA_FILE);
 
             // Load chunk data
             ForceTickManager.loadForceLoadedChunks();
         });
 
         // World unload event - save data (like FXNT)
-        ServerWorldEvents.UNLOAD.register((server, level) -> {
+        ServerWorldEvents.UNLOAD.register((server, world) -> {
             ForceTickManager.saveForceLoadedChunks(server);
         });
 

@@ -7,7 +7,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.profiling.Profiler;
+import net.minecraft.util.profiler.Profiler;
 import net.minecraft.block.BlockState;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.util.math.random.Random;
@@ -83,7 +83,6 @@ public class ForceTickManager {
                 }
 
                 // Check if section has randomly ticking blocks - like FXNT isRandomlyTicking()
-                // In Fabric 1.20.1, we check manually
                 boolean hasRandomTicking = hasRandomlyTickingBlocks(chunkSection);
 
                 if (!hasRandomTicking) {
@@ -293,7 +292,7 @@ public class ForceTickManager {
             stringBuilder.append(chunkKey).append("\n");
         }
 
-        try (FileWriter fileWriter = new FileWriter(ForceTickMod.CHUNK_DATA_FILE_PATH.toString())) {
+        try (FileWriter fileWriter = new FileWriter(ForceTickMod.CHUNK_DATA_FILE_PATH)) {
             fileWriter.write(stringBuilder.toString());
         } catch (IOException e) {
             ForceTickMod.LOGGER.error("Error Saving Force Loaded Chunk Data: {}", e.toString());
@@ -308,7 +307,7 @@ public class ForceTickManager {
         FORCE_LOADED_CHUNKS.clear();
 
         try {
-            BufferedReader reader = new BufferedReader(new FileReader(ForceTickMod.CHUNK_DATA_FILE_PATH.toString()));
+            BufferedReader reader = new BufferedReader(new FileReader(ForceTickMod.CHUNK_DATA_FILE_PATH));
 
             String chunkKey = reader.readLine();
             while (chunkKey != null) {
